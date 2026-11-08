@@ -10,18 +10,8 @@
 </head>
 <body>
   
-  <!-- MENÚ DE INICIO / ARCHIVO -->
+  <!-- MENÚ PRINCIPAL -->
   <div id="archive-view" class="archive-container show">
-    
-    <div class="top-bar-menu">
-      <div class="top-bar-left">
-        <button id="btn-stats" class="btn-pixel small-btn" style="background: var(--card); color: var(--accent);">📊 STATS</button>
-      </div>
-      <div class="streak-badge">
-        <span class="streak-icon">🔥</span>
-        <span id="menu-streak">0</span>
-      </div>
-    </div>
 
     <div class="title-container">
       <h1 class="main-title">EL COLGADO</h1>
@@ -48,24 +38,16 @@
       </div>
     </details>
 
-    <!-- RETO ACTUAL -->
-    <div class="pixel-box">
-      <div class="archive-header">
-        <h2>RETO ACTUAL</h2>
-        <button id="btn-show-archive" class="btn-pixel small-btn" style="background: var(--track); color: #fff;">VER ARCHIVO</button>
+    <!-- RETO DE HOY -->
+    <div class="pixel-box" style="text-align: center;">
+      <h2 style="margin-bottom: 15px; color: var(--accent);">RETO DE HOY</h2>
+      <div id="daily-action-container">
+        <!-- Se inyecta dinámicamente si se ha jugado o no -->
       </div>
-      <div id="current-week-grid" class="days-grid"></div>
-    </div>
-
-    <!-- ARCHIVO COMPLETO OCULTO -->
-    <div id="full-archive-section" class="pixel-box hidden-archive">
-      <h2>ARCHIVO DE DÍAS</h2>
-      <div id="full-days-grid" class="days-grid"></div>
-      <button id="btn-close-archive" class="btn-pixel" style="margin-top: 15px; background: var(--danger); color: #fff;">▲ CERRAR ARCHIVO</button>
     </div>
 
     <!-- BOTÓN DE ENLACE A LA HORQUILLA -->
-    <div class="pixel-box" style="text-align: center; margin-top: 20px;">
+    <div class="pixel-box" style="text-align: center;">
       <h2 style="margin-bottom: 10px; color: var(--accent);">OTROS MINIJUEGOS</h2>
       <p style="margin-bottom: 15px; font-size: 1.3rem; text-transform: none; color: var(--text-muted);">¿Quieres poner a prueba tu intuición con números?</p>
       <a href="https://alejandrocoonde.github.io/lahorquilla/" style="text-decoration: none;">
@@ -76,37 +58,11 @@
     </div>
   </div>
 
-  <!-- VISTA DE ESTADÍSTICAS (MODAL) -->
-  <div id="stats-view" class="archive-container hidden">
-    <div class="pixel-box">
-      <h2>ESTADÍSTICAS GLOBALES</h2>
-      <div class="stats-grid">
-        <div class="stat-box">
-          <span id="stat-played" class="stat-num">0</span>
-          <span class="stat-label">Jugadas</span>
-        </div>
-        <div class="stat-box">
-          <span id="stat-won" class="stat-num">0</span>
-          <span class="stat-label">Victorias</span>
-        </div>
-        <div class="stat-box">
-          <span id="stat-winrate" class="stat-num">0%</span>
-          <span class="stat-label">Éxito</span>
-        </div>
-        <div class="stat-box">
-          <span id="stat-streak" class="stat-num">0</span>
-          <span class="stat-label">Mejor Racha</span>
-        </div>
-      </div>
-      <button id="btn-close-stats" class="btn-pixel" style="margin-top: 20px;">VOLVER</button>
-    </div>
-  </div>
-
-  <!-- VISTA DE REVISIÓN DE PARTIDA (ARCHIVO) -->
+  <!-- VISTA DE REVISIÓN DEL DÍA -->
   <div id="review-view" class="archive-container hidden">
     <div class="pixel-box">
-      <h2 id="review-title">REVISIÓN - DÍA X</h2>
-      <p style="margin-top:5px; margin-bottom: 15px; color: var(--text-muted);">Tu resultado en esta partida:</p>
+      <h2>REVISIÓN DE HOY</h2>
+      <p style="margin-top:5px; margin-bottom: 15px; color: var(--text-muted);">Tu resultado en el reto diario:</p>
       
       <div id="review-content" class="review-content"></div>
       
@@ -119,12 +75,8 @@
   <div id="game-view" class="game-container hidden">
     <header class="pixel-box" id="game-header-box">
       <div class="brand">
-        <h1>EL COLGADO <span id="day-badge" class="badge">DÍA -</span></h1>
+        <h1>EL COLGADO <span id="day-badge" class="badge">HOY</span></h1>
         <div class="brand-right">
-          <div class="streak-badge game-streak">
-            <span class="streak-icon">🔥</span>
-            <span id="game-streak-text">0</span>
-          </div>
           <button id="btn-archive" class="btn-pixel small-btn">SALIR</button>
         </div>
       </div>
@@ -164,7 +116,7 @@
       <!-- TECLADO -->
       <div id="keyboard" class="keyboard"></div>
 
-      <button id="action-btn" class="btn-pixel hidden" style="margin-top: 20px;">COMPROBANDO...</button>
+      <button id="action-btn" class="btn-pixel hidden" style="margin-top: 20px;">VOLVER AL MENÚ</button>
     </div>
   </div>
 
