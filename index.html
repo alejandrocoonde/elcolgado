@@ -6,77 +6,169 @@
   <title>EL COLGADO - by 87conde ft. alecayg</title>
   <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <meta name="theme-color" content="#1a1a2e">
 </head>
 <body>
-
-  <!-- HEADER FUERA DE CAJAS -->
-  <div class="header-container">
-    <h1 class="main-title">EL COLGADO</h1>
-    <div class="signature-badge">by 87conde <span class="ft">ft. alecayg</span></div>
-  </div>
-
-  <!-- PANTALLA MENÚ -->
-  <div id="screen-menu" class="container">
+  
+  <!-- MENÚ DE INICIO / ARCHIVO -->
+  <div id="archive-view" class="archive-container show">
     
-    <!-- TEMPORIZADOR -->
-    <div class="pixel-box timer-box">
-      ⏳ PRÓXIMO RETO EN: <span id="countdown">00:00:00</span>
+    <div class="top-bar-menu">
+      <div class="top-bar-left">
+        <button id="btn-stats" class="btn-pixel small-btn" style="background: var(--card); color: var(--accent);">📊 STATS</button>
+      </div>
+      <div class="streak-badge">
+        <span class="streak-icon">🔥</span>
+        <span id="menu-streak">0</span>
+      </div>
     </div>
 
-    <!-- DESPLEGABLE CÓMO JUGAR -->
-    <details class="pixel-box how-to-play">
-      <summary>📖 CÓMO JUGAR</summary>
-      <div class="details-content">
-        <p>Adivina la palabra del día relacionada con la informática y tecnología.</p>
-        <p>El personaje saltará a la cuerda. Tienes <strong>6 intentos</strong> (5 dedos y caída) antes de que caiga a la lava.</p>
+    <div class="title-container">
+      <h1 class="main-title">EL COLGADO</h1>
+      <span class="signature">by 87conde <span class="ft">ft. alecayg</span></span>
+    </div>
+
+    <!-- CONTADOR DE TIEMPO -->
+    <div class="pixel-box countdown-box">
+      <span class="countdown-label">⏳ PRÓXIMO RETO EN:</span>
+      <span id="countdown-timer" class="mono">--:--:--</span>
+    </div>
+
+    <!-- CÓMO JUGAR EN ACORDEÓN DESPLEGABLE -->
+    <details class="pixel-box how-to-accordion">
+      <summary>
+        <h3>CÓMO JUGAR <span class="arrow">▼</span></h3>
+      </summary>
+      <div class="accordion-content">
+        <p>🎯 Adivina la palabra del día relacionada con <strong>cultura general</strong>.</p>
+        <p>💔 El personaje saltará a la cuerda. Tienes <strong>6 intentos</strong> (5 dedos y caída) antes de que caiga a la lava.</p>
         <p>🔠 <strong>LETRA:</strong> Te regala una letra al azar de la palabra.</p>
         <p>💡 <strong>PISTA:</strong> Te muestra la definición o concepto.</p>
-        <p style="color:var(--accent); text-align:center; margin-top:10px;">¡Solo un reto al día!</p>
+        <p>🏆 ¡Solo un reto al día!</p>
       </div>
     </details>
 
-    <!-- ZONA DE JUEGO / RESULTADO -->
-    <div class="pixel-box play-box">
-      <button id="btn-play" class="btn-pixel">▶ JUGAR</button>
-      
-      <div id="played-state" class="hidden">
-        <h2 id="played-title" style="margin-bottom: 10px;"></h2>
-        <p style="font-size:1.2rem;">LA PALABRA DE HOY ERA:</p>
-        <p id="played-word" style="font-size:2.5rem; color:var(--accent); margin:10px 0;"></p>
-        <p>Vuelve mañana a por el siguiente reto.</p>
+    <!-- RETO ACTUAL -->
+    <div class="pixel-box">
+      <div class="archive-header">
+        <h2>RETO ACTUAL</h2>
+        <button id="btn-show-archive" class="btn-pixel small-btn" style="background: var(--track); color: #fff;">VER ARCHIVO</button>
       </div>
+      <div id="current-week-grid" class="days-grid"></div>
     </div>
-    
-    <!-- VOLVER A LA HORQUILLA -->
-    <a href="https://alejandrocoonde.github.io/lahorquilla/" class="btn-pixel btn-return" style="margin-top:0;">
-      ◀ VOLVER A LA HORQUILLA
-    </a>
+
+    <!-- ARCHIVO COMPLETO OCULTO -->
+    <div id="full-archive-section" class="pixel-box hidden-archive">
+      <h2>ARCHIVO DE DÍAS</h2>
+      <div id="full-days-grid" class="days-grid"></div>
+      <button id="btn-close-archive" class="btn-pixel" style="margin-top: 15px; background: var(--danger); color: #fff;">▲ CERRAR ARCHIVO</button>
+    </div>
+
+    <!-- BOTÓN DE ENLACE A LA HORQUILLA -->
+    <div class="pixel-box" style="text-align: center; margin-top: 20px;">
+      <h2 style="margin-bottom: 10px; color: var(--accent);">OTROS MINIJUEGOS</h2>
+      <p style="margin-bottom: 15px; font-size: 1.3rem; text-transform: none; color: var(--text-muted);">¿Quieres poner a prueba tu intuición con números?</p>
+      <a href="https://alejandrocoonde.github.io/lahorquilla/" style="text-decoration: none;">
+        <button class="btn-pixel" style="background: var(--success); color: #fff; display: flex; justify-content: center; align-items: center; gap: 10px; margin: 0 auto;">
+          <span>🎯</span> JUGAR "LA HORQUILLA"
+        </button>
+      </a>
+    </div>
   </div>
 
-  <!-- PANTALLA JUEGO -->
-  <div id="screen-game" class="container hidden">
-    <div class="pixel-box game-box">
-      <div id="art" class="ascii-art"></div>
+  <!-- VISTA DE ESTADÍSTICAS (MODAL) -->
+  <div id="stats-view" class="archive-container hidden">
+    <div class="pixel-box">
+      <h2>ESTADÍSTICAS GLOBALES</h2>
+      <div class="stats-grid">
+        <div class="stat-box">
+          <span id="stat-played" class="stat-num">0</span>
+          <span class="stat-label">Jugadas</span>
+        </div>
+        <div class="stat-box">
+          <span id="stat-won" class="stat-num">0</span>
+          <span class="stat-label">Victorias</span>
+        </div>
+        <div class="stat-box">
+          <span id="stat-winrate" class="stat-num">0%</span>
+          <span class="stat-label">Éxito</span>
+        </div>
+        <div class="stat-box">
+          <span id="stat-streak" class="stat-num">0</span>
+          <span class="stat-label">Mejor Racha</span>
+        </div>
+      </div>
+      <button id="btn-close-stats" class="btn-pixel" style="margin-top: 20px;">VOLVER</button>
+    </div>
+  </div>
+
+  <!-- VISTA DE REVISIÓN DE PARTIDA (ARCHIVO) -->
+  <div id="review-view" class="archive-container hidden">
+    <div class="pixel-box">
+      <h2 id="review-title">REVISIÓN - DÍA X</h2>
+      <p style="margin-top:5px; margin-bottom: 15px; color: var(--text-muted);">Tu resultado en esta partida:</p>
+      
+      <div id="review-content" class="review-content"></div>
+      
+      <button id="btn-share" class="btn-pixel share-btn" style="margin-top: 20px;">COMPARTIR RESULTADO 📋</button>
+      <button id="btn-back-archive" class="btn-pixel" style="margin-top: 10px; background: var(--track); color: #fff;">VOLVER AL MENÚ</button>
+    </div>
+  </div>
+
+  <!-- JUEGO PRINCIPAL -->
+  <div id="game-view" class="game-container hidden">
+    <header class="pixel-box" id="game-header-box">
+      <div class="brand">
+        <h1>EL COLGADO <span id="day-badge" class="badge">DÍA -</span></h1>
+        <div class="brand-right">
+          <div class="streak-badge game-streak">
+            <span class="streak-icon">🔥</span>
+            <span id="game-streak-text">0</span>
+          </div>
+          <button id="btn-archive" class="btn-pixel small-btn">SALIR</button>
+        </div>
+      </div>
+      <div class="stats-row" style="justify-content: center;">
+        <div class="status-group">
+          <span>INTENTOS RESTANTES: </span>
+          <span id="lives-display" class="lives">❤️❤️❤️❤️❤️❤️</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="question-card pixel-box" id="question-card-box">
+      
+      <!-- ARTE DEL JUEGO (PIXEL ART) -->
+      <div class="art-container" id="art">
+        <div class="rope"></div>
+        <div class="player" id="player-sprite">
+          <div class="hand" id="player-hand"></div>
+          <div class="head"></div>
+          <div class="body-sprite"></div>
+          <div class="legs"></div>
+        </div>
+        <div class="platform"></div>
+        <div class="lava-pool"></div>
+      </div>
+
+      <!-- PALABRA -->
       <div id="word-container" class="word-container"></div>
 
+      <!-- PISTAS -->
       <div class="hints-panel">
-        <button id="btn-hint-let" class="btn-pixel small">🔠 LETRA</button>
-        <button id="btn-hint-def" class="btn-pixel small">💡 PISTA</button>
+        <button id="btn-hint-let" class="btn-pixel small-btn">🔠 LETRA</button>
+        <button id="btn-hint-def" class="btn-pixel small-btn">💡 PISTA</button>
       </div>
-      <div id="hint-display"></div>
+      <div id="hint-display" class="feedback"></div>
 
+      <!-- TECLADO -->
       <div id="keyboard" class="keyboard"></div>
+
+      <button id="action-btn" class="btn-pixel hidden" style="margin-top: 20px;">COMPROBANDO...</button>
     </div>
   </div>
 
-  <!-- MODAL FIN DE JUEGO -->
-  <div id="modal">
-    <div class="pixel-box">
-      <h1 id="modal-title"></h1>
-      <p style="font-size:1.5rem; margin: 20px 0;">LA PALABRA ERA:<br><span id="modal-final-word" style="color:var(--accent); font-size:2rem;"></span></p>
-      <button class="btn-pixel" onclick="location.reload()">VER RESULTADO</button>
-    </div>
-  </div>
+  <div id="toast" class="toast">¡COPIADO AL PORTAPAPELES!</div>
 
   <script src="script.js"></script>
 </body>
