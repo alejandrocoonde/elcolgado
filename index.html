@@ -3,132 +3,81 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EL COLGADO - by 87conde</title>
+  <title>EL COLGADO - by 87conde ft. alecayg</title>
   <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg: #2b2b45;
-      --card: #1a1a2e;
-      --accent: #facc15;
-      --danger: #ef4444;
-      --success: #22c55e;
-      --text: #e2e8f0;
-      --track: #475569;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body { 
-      background-color: var(--bg); 
-      color: var(--text); 
-      font-family: 'VT323', monospace; 
-      display: flex; 
-      flex-direction: column;
-      align-items: center; 
-      padding: 20px; 
-      min-height: 100vh;
-      text-transform: uppercase;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 550px;
-      margin-top: 5vh;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    .pixel-box { 
-      background: var(--card); 
-      padding: 20px; 
-      border: 4px solid #000; 
-      box-shadow: 6px 6px 0px rgba(0,0,0,0.8); 
-      text-align: center;
-    }
-
-    h1 { 
-      font-size: 3.5rem; 
-      color: var(--danger); /* Rojo lava para diferenciarlo del amarillo de La Horquilla */
-      text-shadow: 4px 4px 0px #000; 
-      margin-bottom: 5px;
-      line-height: 1;
-    }
-
-    .signature { 
-      font-size: 1.2rem; 
-      color: var(--accent); 
-    }
-
-    .ascii-art {
-      font-size: 1.5rem;
-      white-space: pre;
-      line-height: 1.2;
-      margin: 20px 0;
-      color: #fff;
-    }
-
-    .btn-pixel { 
-      width: 100%; 
-      background: var(--accent); 
-      color: #000; 
-      font-family: 'VT323'; 
-      font-size: 1.8rem; 
-      border: 4px solid #000; 
-      box-shadow: 6px 6px 0px #000; 
-      padding: 12px; 
-      cursor: pointer; 
-      transition: transform 0.1s, box-shadow 0.1s;
-      text-decoration: none;
-      display: inline-block;
-      margin-top: 10px;
-    }
-
-    .btn-pixel:active { 
-      transform: translate(6px, 6px); 
-      box-shadow: 0px 0px 0px #000; 
-    }
-    
-    .btn-return {
-      background: var(--track);
-      color: #fff;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <div class="container">
-    <div class="pixel-box">
-      <h1>EL COLGADO</h1>
-      <span class="signature">by 87conde</span>
-      
-      <!-- Zona de pruebas para el dibujo ASCII -->
-      <div class="ascii-art">
-   |
- [|||  ]
-   O
-  /|\
-  / \
+  <!-- HEADER FUERA DE CAJAS -->
+  <div class="header-container">
+    <h1 class="main-title">EL COLGADO</h1>
+    <div class="signature-badge">by 87conde <span class="ft">ft. alecayg</span></div>
+  </div>
+
+  <!-- PANTALLA MENÚ -->
+  <div id="screen-menu" class="container">
+    
+    <!-- TEMPORIZADOR -->
+    <div class="pixel-box timer-box">
+      ⏳ PRÓXIMO RETO EN: <span id="countdown">00:00:00</span>
+    </div>
+
+    <!-- DESPLEGABLE CÓMO JUGAR -->
+    <details class="pixel-box how-to-play">
+      <summary>📖 CÓMO JUGAR</summary>
+      <div class="details-content">
+        <p>Adivina la palabra del día relacionada con la informática y tecnología.</p>
+        <p>El personaje saltará a la cuerda. Tienes <strong>6 intentos</strong> (5 dedos y caída) antes de que caiga a la lava.</p>
+        <p>🔠 <strong>LETRA:</strong> Te regala una letra al azar de la palabra.</p>
+        <p>💡 <strong>PISTA:</strong> Te muestra la definición o concepto.</p>
+        <p style="color:var(--accent); text-align:center; margin-top:10px;">¡Solo un reto al día!</p>
       </div>
+    </details>
 
-      <p style="font-size: 1.5rem; color: var(--text-muted); margin-bottom: 15px;">
-        Prueba de conexión exitosa.
-      </p>
-
-      <button id="btn-test" class="btn-pixel">BOTÓN DE PRUEBA</button>
+    <!-- ZONA DE JUEGO / RESULTADO -->
+    <div class="pixel-box play-box">
+      <button id="btn-play" class="btn-pixel">▶ JUGAR</button>
       
-      <!-- Enlace directo a tu otro juego -->
-      <a href="https://alejandrocoonde.github.io/lahorquilla/" class="btn-pixel btn-return">
-        ◀ VOLVER A LA HORQUILLA
-      </a>
+      <div id="played-state" class="hidden">
+        <h2 id="played-title" style="margin-bottom: 10px;"></h2>
+        <p style="font-size:1.2rem;">LA PALABRA DE HOY ERA:</p>
+        <p id="played-word" style="font-size:2.5rem; color:var(--accent); margin:10px 0;"></p>
+        <p>Vuelve mañana a por el siguiente reto.</p>
+      </div>
+    </div>
+    
+    <!-- VOLVER A LA HORQUILLA -->
+    <a href="https://alejandrocoonde.github.io/lahorquilla/" class="btn-pixel btn-return" style="margin-top:0;">
+      ◀ VOLVER A LA HORQUILLA
+    </a>
+  </div>
+
+  <!-- PANTALLA JUEGO -->
+  <div id="screen-game" class="container hidden">
+    <div class="pixel-box game-box">
+      <div id="art" class="ascii-art"></div>
+      <div id="word-container" class="word-container"></div>
+
+      <div class="hints-panel">
+        <button id="btn-hint-let" class="btn-pixel small">🔠 LETRA</button>
+        <button id="btn-hint-def" class="btn-pixel small">💡 PISTA</button>
+      </div>
+      <div id="hint-display"></div>
+
+      <div id="keyboard" class="keyboard"></div>
     </div>
   </div>
 
-  <script>
-    document.getElementById('btn-test').addEventListener('click', () => {
-      alert("¡El JavaScript de El Colgado está funcionando perfectamente!");
-    });
-  </script>
+  <!-- MODAL FIN DE JUEGO -->
+  <div id="modal">
+    <div class="pixel-box">
+      <h1 id="modal-title"></h1>
+      <p style="font-size:1.5rem; margin: 20px 0;">LA PALABRA ERA:<br><span id="modal-final-word" style="color:var(--accent); font-size:2rem;"></span></p>
+      <button class="btn-pixel" onclick="location.reload()">VER RESULTADO</button>
+    </div>
+  </div>
 
+  <script src="script.js"></script>
 </body>
 </html>

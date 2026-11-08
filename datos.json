@@ -1,0 +1,122 @@
+[
+  {
+    "word": "HARDWARE",
+    "def": "Componentes físicos y tangibles de un sistema informático."
+  },
+  {
+    "word": "SOFTWARE",
+    "def": "Conjunto de programas y rutinas que permiten a la computadora realizar tareas."
+  },
+  {
+    "word": "ALGORITMO",
+    "def": "Secuencia lógica y finita de pasos para resolver un problema."
+  },
+  {
+    "word": "VARIABLE",
+    "def": "Espacio reservado en memoria cuyo valor puede cambiar durante la ejecución."
+  },
+  {
+    "word": "SISTEMA",
+    "def": "Conjunto de elementos ordenados que interactúan para un fin común."
+  },
+  {
+    "word": "MEMORIA",
+    "def": "Componente que almacena datos de forma temporal o permanente."
+  },
+  {
+    "word": "TECLADO",
+    "def": "Periférico de entrada principal compuesto por botones o teclas."
+  },
+  {
+    "word": "PANTALLA",
+    "def": "Dispositivo de salida que muestra visualmente la información."
+  },
+  {
+    "word": "SERVIDOR",
+    "def": "Equipo informático que provee recursos o servicios a otros equipos en red."
+  },
+  {
+    "word": "ARCHIVO",
+    "def": "Conjunto de datos estructurados almacenados bajo un nombre específico."
+  },
+  {
+    "word": "ROUTER",
+    "def": "Dispositivo de hardware que dirige el tráfico de datos en una red."
+  },
+  {
+    "word": "COMPILAR",
+    "def": "Proceso de traducir código fuente a lenguaje máquina ejecutable."
+  },
+  {
+    "word": "INTERFAZ",
+    "def": "Medio de comunicación que conecta a un usuario con un sistema."
+  },
+  {
+    "word": "BASE",
+    "def": "Estructura de almacenamiento de información para su rápida consulta (___ de datos)."
+  },
+  {
+    "word": "REDES",
+    "def": "Conjunto de equipos interconectados para compartir información."
+  },
+  {
+    "word": "PROTOCOLO",
+    "def": "Conjunto de reglas y estándares para la comunicación en red."
+  },
+  {
+    "word": "ENCRIPTAR",
+    "def": "Proceso de ocultar datos mediante el uso de una clave secreta."
+  },
+  {
+    "word": "CODIGO",
+    "def": "Conjunto de instrucciones escritas por un programador."
+  },
+  {
+    "word": "LINUX",
+    "def": "Sistema operativo de código abierto muy usado en desarrollo y servidores."
+  },
+  {
+    "word": "FIREWALL",
+    "def": "Sistema de seguridad que bloquea accesos no autorizados a una red."
+  },
+  {
+    "word": "PIXEL",
+    "def": "La menor unidad homogénea en color que forma una imagen digital."
+  },
+  {
+    "word": "BINARIO",
+    "def": "Sistema de numeración que utiliza únicamente dos dígitos: ceros y unos."
+  },
+  {
+    "word": "CACHE",
+    "def": "Memoria de acceso ultrarrápido que guarda datos de uso frecuente."
+  },
+  {
+    "word": "BACKUP",
+    "def": "Término en inglés para referirse a una copia de seguridad."
+  },
+  {
+    "word": "FRAMEWORK",
+    "def": "Entorno o marco de trabajo estructurado para el desarrollo de software."
+  },
+  {
+    "word": "DEBUG",
+    "def": "Proceso metodológico para encontrar y reducir bugs o errores en un código."
+  },
+  {
+    "word": "SINTAXIS",
+    "def": "Conjunto de reglas que definen cómo debe escribirse el código en un lenguaje."
+  },
+  {
+    "word": "DOMINIO",
+    "def": "Nombre único y fácil de recordar asignado a una dirección IP en internet."
+  },
+  {
+    "word": "FUNCION",
+    "def": "Bloque de código reutilizable que realiza una tarea específica."
+  },
+  {
+    "word": "TERMINAL",
+    "def": "Interfaz de línea de comandos donde se introducen instrucciones de texto."
+  }
+]
