@@ -296,39 +296,69 @@ function renderKeyboard() {
   });
 }
 
+// LOGICA DE PISTAS ACTUALIZADA
 function renderHints() {
   const isFinished = savedState.status !== 'playing';
 
-  btnHintDef.style.opacity = (savedState.hints.def || isFinished || isAnimating) ? '0.4' : '1';
-  btnHintLet.style.opacity = (savedState.hints.let || isFinished || isAnimating) ? '0.4' : '1';
-  
+  // Deshabilita letra si se usó, no estamos jugando, animando o queda 1 vida (fails >= 5)
+  const disableLet = savedState.hints.let || isFinished || isAnimating || savedState.fails >= 5;
+  // Deshabilita definición si se usó, no estamos jugando, animando o quedan más de 2 vidas (fails < 4)
+  const disableDef = savedState.hints.def || isFinished || isAnimating || savedState.fails < 4;
+
+  // Usamos disabled nativo (CSS lo pondrá gris)
+  btnHintLet.disabled = disableLet;
+  btnHintDef.disabled = disableDef;
+
   if (savedState.hints.def || isFinished) {
     hintDisplay.style.display = 'block';
     hintDisplay.innerText = todayPuzzle.definicion;
   }
 
-  if (isFinished || isAnimating) {
-    btnHintDef.onclick = null;
-    btnHintLet.onclick = null;
-    return;
-  }
-
   btnHintDef.onclick = () => {
-    if (savedState.hints.def || savedState.status !== 'playing' || isAnimating) return;
+    if (disableDef) return;
     savedState.hints.def = true;
     saveStateToLocal();
     renderHints();
   };
 
   btnHintLet.onclick = () => {
-    if (savedState.hints.let || savedState.status !== 'playing' || isAnimating) return;
+    if (disableLet) return;
     const unrevealed = todayPuzzle.palabra.split('').filter(l => !savedState.guessed.includes(l));
     if (unrevealed.length > 0) {
       savedState.hints.let = true;
+      savedState.fails++; // LA PISTA CUESTA UNA VIDA
+      
       const randomChar = unrevealed[Math.floor(Math.random() * unrevealed.length)];
+      savedState.guessed.push(randomChar);
       saveStateToLocal();
-      renderHints();
-      handleGuess(randomChar, true);
+      
+      renderWord();
+      updateLivesUI();
+      
+      const keyBtn = document.getElementById('key-' + randomChar);
+      if (keyBtn) keyBtn.classList.add('correct');
+      
+      const isWon = todayPuzzle.palabra.split('').every(l => savedState.guessed.includes(l));
+      
+      if (isWon) {
+        // Si la letra gana la partida, lo mostramos al instante y lanzamos victoria
+        const cardBox = document.getElementById('question-card-box');
+        cardBox.classList.remove('flash-success');
+        void cardBox.offsetWidth;
+        cardBox.classList.add('flash-success');
+        
+        if (savedState.fails === 1) {
+            spriteStand.style.display = 'none';
+            spriteHang.style.display = 'block';
+            playerGroup.setAttribute('class', 'player-on-rope');
+            camera.setAttribute('class', 'zoomed');
+        }
+        updateFingersUI();
+        checkWinCondition();
+      } else {
+        // Si no ganas aún, se lanza la animación de fallo (saltar o perder el dedo)
+        triggerFailAnimation();
+      }
     }
   };
 }
@@ -417,6 +447,7 @@ function checkWinCondition() {
     savedState.status = 'won';
     saveStateToLocal();
     document.querySelectorAll('.key').forEach(btn => btn.style.pointerEvents = 'none');
+    renderHints(); // Para deshabilitar visualmente las pistas
     
     setTimeout(() => {
       showReview();
@@ -428,5 +459,6 @@ function checkLossCondition() {
   savedState.status = 'lost';
   saveStateToLocal();
   document.querySelectorAll('.key').forEach(btn => btn.style.pointerEvents = 'none');
+  renderHints(); // Para deshabilitar visualmente las pistas
   showReview();
 }
