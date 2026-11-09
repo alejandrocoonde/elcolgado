@@ -38,7 +38,7 @@ const svgFingers = [
   document.getElementById('f5')
 ];
 
-// Carga inicial robusta (funciona tanto si hay backend JSON como si se abre en directo)
+// Carga inicial robusta
 fetch('datos.json')
   .then(res => {
     if (!res.ok) throw new Error('No se pudo cargar datos.json');
@@ -219,21 +219,22 @@ function renderGameInit() {
   renderHints();
   updateLivesUI();
   
+  // AHORA SÍ: setAttribute es la forma correcta de cambiar clases en un elemento SVG
   if (savedState.fails === 0) {
       spriteStand.style.display = 'block';
       spriteHang.style.display = 'none';
-      playerGroup.className = 'player-start';
-      camera.className = '';
+      playerGroup.setAttribute('class', 'player-start');
+      camera.setAttribute('class', '');
   } else if (savedState.fails >= 1 && savedState.fails < 6) {
       spriteStand.style.display = 'none';
       spriteHang.style.display = 'block';
-      playerGroup.className = 'player-on-rope';
-      camera.className = 'zoomed';
+      playerGroup.setAttribute('class', 'player-on-rope');
+      camera.setAttribute('class', 'zoomed');
   } else if (savedState.fails >= 6) {
       spriteStand.style.display = 'none';
       spriteHang.style.display = 'block'; 
-      playerGroup.className = 'player-in-lava';
-      camera.className = '';
+      playerGroup.setAttribute('class', 'player-in-lava');
+      camera.setAttribute('class', '');
   }
   
   updateFingersUI();
@@ -365,6 +366,7 @@ function handleGuess(key, isHint = false) {
   }
 }
 
+// LOGICA ACTUALIZADA DE ANIMACIONES SVG
 function triggerFailAnimation() {
   isAnimating = true;
   renderKeyboard();
@@ -373,7 +375,7 @@ function triggerFailAnimation() {
   updateFingersUI();
   
   if (savedState.fails === 1) {
-    playerGroup.className = 'jumping-to-rope';
+    playerGroup.setAttribute('class', 'jumping-to-rope');
     
     setTimeout(() => {
       spriteStand.style.display = 'none';
@@ -381,7 +383,7 @@ function triggerFailAnimation() {
     }, 1200);
 
     setTimeout(() => {
-      camera.classList.add('zoomed');
+      camera.setAttribute('class', 'zoomed');
     }, 2200);
 
     setTimeout(() => {
@@ -391,10 +393,10 @@ function triggerFailAnimation() {
     }, 3200); 
 
   } else if (savedState.fails === 6) {
-    camera.classList.remove('zoomed');
+    camera.setAttribute('class', '');
     
     setTimeout(() => {
-      playerGroup.className = 'falling-to-lava';
+      playerGroup.setAttribute('class', 'falling-to-lava');
     }, 1000);
 
     setTimeout(() => {

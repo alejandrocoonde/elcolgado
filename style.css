@@ -115,6 +115,11 @@ header { display: flex; flex-direction: column; gap: 15px; }
 }
 
 /* ESTADOS DEL PERSONAJE Y ANIMACIONES */
+#player-group {
+  transform-box: fill-box;
+  transform-origin: center center;
+}
+
 .player-start {
   transform: translate(20px, 62px);
 }
@@ -122,7 +127,7 @@ header { display: flex; flex-direction: column; gap: 15px; }
   transform: translate(108px, 35px);
 }
 .player-in-lava {
-  transform: translate(108px, 150px) rotate(180deg);
+  transform: translate(108px, 150px) rotate(360deg);
 }
 
 .jumping-to-rope {
@@ -136,11 +141,11 @@ header { display: flex; flex-direction: column; gap: 15px; }
 }
 
 .falling-to-lava {
-  animation: fallSequence 1s forwards ease-in;
+  animation: fallSequence 1s forwards cubic-bezier(0.5, 0, 1, 1);
 }
 @keyframes fallSequence {
   0% { transform: translate(108px, 35px) rotate(0deg); }
-  100% { transform: translate(108px, 150px) rotate(180deg); }
+  100% { transform: translate(108px, 150px) rotate(360deg); }
 }
 
 /* PALABRA Y TECLADO */
