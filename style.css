@@ -62,11 +62,26 @@ header { display: flex; flex-direction: column; gap: 15px; }
 .status-group { display: flex; align-items: center; gap: 10px; font-size: 1.3rem; }
 .lives { font-size: 1.2rem; letter-spacing: 2px; }
 
+/* REVISIÓN ESTILO HORQUILLA */
 .review-content { display: flex; flex-direction: column; gap: 15px; margin-top: 15px; }
-.review-item { background: var(--bg); border: 2px solid #000; padding: 15px; text-align: center;}
-.review-item.correct { border-left: 8px solid var(--success); }
-.review-item.incorrect { border-left: 8px solid var(--danger); }
-.review-word { font-size: 2.5rem; color: var(--accent); margin-bottom: 5px; }
+.review-item { 
+  background: var(--bg); 
+  border: 3px solid #000; 
+  padding: 20px; 
+  text-align: center;
+}
+.review-item.correct { 
+  background: rgba(34, 197, 94, 0.15); 
+  border-color: var(--success); 
+  color: var(--success);
+}
+.review-item.incorrect { 
+  background: rgba(239, 68, 68, 0.15); 
+  border-color: var(--danger); 
+  color: var(--danger);
+}
+.review-word { font-size: 3rem; margin-bottom: 10px; font-weight: bold; }
+.review-item p { color: inherit; } 
 
 /* ARTE PIXELADO Y LAVA */
 .art-container {
@@ -192,6 +207,12 @@ header { display: flex; flex-direction: column; gap: 15px; }
   z-index: 100; box-shadow: 4px 4px 0px rgba(0,0,0,0.8); pointer-events: none;
 }
 .toast.show { bottom: 30px; }
+
+.modal-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.85); display: none; 
+  flex-direction: column; align-items: center; justify-content: center; z-index: 100;
+}
 
 @keyframes shake {
   0% { transform: translate(0, 0); }

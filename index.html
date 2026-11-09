@@ -38,16 +38,13 @@
       </div>
     </details>
 
-    <!-- RETO DE HOY -->
-    <div class="pixel-box" style="text-align: center;">
-      <h2 style="margin-bottom: 15px; color: var(--accent);">RETO DE HOY</h2>
-      <div id="daily-action-container">
-        <!-- Se inyecta dinámicamente si se ha jugado o no -->
-      </div>
+    <!-- BOTÓN DE ACCIÓN DIARIA -->
+    <div id="daily-action-container" style="text-align: center; margin-top: 10px;">
+      <!-- Se inyecta dinámicamente el botón JUGAR o HOY: JUGADO -->
     </div>
 
     <!-- BOTÓN DE ENLACE A LA HORQUILLA -->
-    <div class="pixel-box" style="text-align: center;">
+    <div class="pixel-box" style="text-align: center; margin-top: 10px;">
       <h2 style="margin-bottom: 10px; color: var(--accent);">OTROS MINIJUEGOS</h2>
       <p style="margin-bottom: 15px; font-size: 1.3rem; text-transform: none; color: var(--text-muted);">¿Quieres poner a prueba tu intuición con números?</p>
       <a href="https://alejandrocoonde.github.io/lahorquilla/" style="text-decoration: none;">
@@ -115,8 +112,15 @@
 
       <!-- TECLADO -->
       <div id="keyboard" class="keyboard"></div>
+    </div>
+  </div>
 
-      <button id="action-btn" class="btn-pixel hidden" style="margin-top: 20px;">VOLVER AL MENÚ</button>
+  <!-- PESTAÑA MODAL FIN DE PARTIDA -->
+  <div id="end-game-modal" class="modal-overlay">
+    <div class="pixel-box" style="width: 90%; max-width: 400px; text-align: center;">
+      <h1 id="modal-title" style="font-size: 3.5rem; margin-bottom: 5px;"></h1>
+      <p id="modal-desc" style="font-size: 1.6rem; margin-bottom: 20px; color: var(--text); text-transform: none;"></p>
+      <button id="btn-modal-continue" class="btn-pixel">VER REVISIÓN</button>
     </div>
   </div>
 
