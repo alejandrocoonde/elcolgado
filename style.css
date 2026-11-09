@@ -8,9 +8,9 @@
   --text-muted: #4b5563; /* Gris oscuro para textos secundarios */
   --track: #374151; /* Gris muy oscuro para teclado y fondos inactivos */
   --border: #000000;
-  --lava: #ff5722;
-  --lava-dark: #e64a19;
-  --skin: #ffbba5;
+  --lava: #ea580c;
+  --lava-dark: #c2410c;
+  --skin: #fcd34d; /* Tono piel tipo simpson / amarillo */
   --rope: #d7ccc8;
 }
 
@@ -84,10 +84,10 @@ header { display: flex; flex-direction: column; gap: 15px; }
 .review-word { font-size: 3rem; margin-bottom: 10px; font-weight: bold; color: var(--text); }
 .review-item p { color: var(--text); } 
 
-/* ARTE PIXELADO Y LAVA */
+/* ARTE SVG Y LAVA */
 .art-container {
   width: 100%;
-  height: 180px;
+  height: 200px;
   background: #111827; 
   border: 4px solid var(--track);
   position: relative;
@@ -97,84 +97,26 @@ header { display: flex; flex-direction: column; gap: 15px; }
   justify-content: center;
 }
 
-.rope {
-  position: absolute;
-  top: 0;
-  width: 4px;
-  height: 60px;
-  background: var(--rope);
-  left: 50%;
-  transform: translateX(-50%);
-  display: none;
+#svg-player {
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.player {
-  position: absolute;
-  bottom: 30px;
-  width: 40px;
-  height: 80px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  transition: all 0.3s ease;
+/* Animaciones de la lava */
+.lava-wave {
+  animation: lavaFlow 3s infinite alternate ease-in-out;
+}
+@keyframes lavaFlow {
+  0% { transform: translateY(0) scaleY(1); }
+  100% { transform: translateY(-5px) scaleY(1.1); }
 }
 
-.player .head { width: 30px; height: 30px; background: var(--skin); border: 2px solid #fff; border-radius: 4px; margin-bottom: 2px;}
-.player .body-sprite { width: 24px; height: 30px; background: var(--accent); border: 2px solid #fff;}
-.player .legs { width: 24px; height: 16px; border-left: 8px solid #fff; border-right: 8px solid #fff; margin-top: 2px; }
-.player .hand {
-  position: absolute;
-  top: -15px;
-  width: 30px;
-  height: 15px;
-  background: var(--skin);
-  border: 2px solid #fff;
-  border-radius: 5px 5px 0 0;
-  display: none;
-  justify-content: space-between;
-  padding: 0 2px;
-}
-.finger { width: 4px; height: 10px; background: #fff; margin-top: 2px;}
-
-.platform {
-  position: absolute;
-  bottom: 20px;
-  width: 80px;
-  height: 10px;
-  background: var(--track);
-  border: 2px solid #fff;
-}
-
-.lava-pool {
-  position: absolute;
-  bottom: -10px;
-  width: 120%;
-  height: 30px;
-  background: var(--lava);
-  border-top: 4px dashed var(--lava-dark);
-  animation: wave 2s infinite linear;
-}
-
-@keyframes wave {
-  0% { transform: translateX(0) translateY(0); }
-  50% { transform: translateX(-20px) translateY(5px); }
-  100% { transform: translateX(0) translateY(0); }
-}
-
-.player.jumping {
-  bottom: 60px;
-  transform: scale(1.5);
-  z-index: 10;
-}
-.player.jumping .hand { display: flex; }
-.player.jumping .legs { border: none; width: 0; } 
-.player.jumping .platform { display: none; }
-
-.player.dead {
-  bottom: 0px;
-  transform: rotate(180deg) scale(0.5);
-  opacity: 0;
-  transition: all 0.5s ease-in;
+.spark { animation: sparkRise 2s infinite linear; opacity: 0; }
+.spark-1 { animation-delay: 0s; }
+.spark-2 { animation-delay: 0.6s; }
+.spark-3 { animation-delay: 1.2s; }
+@keyframes sparkRise {
+  0% { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(-30px); opacity: 0; }
 }
 
 .word-container { display: flex; gap: 8px; justify-content: center; margin: 15px 0; flex-wrap: wrap; }

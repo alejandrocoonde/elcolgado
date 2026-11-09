@@ -24,11 +24,27 @@ const btnHintLet = document.getElementById('btn-hint-let');
 const livesDisplay = document.getElementById('lives-display');
 const dailyActionContainer = document.getElementById('daily-action-container');
 
-// Elementos Arte
-const playerSprite = document.getElementById('player-sprite');
-const playerHand = document.getElementById('player-hand');
-const rope = document.querySelector('.rope');
-const platform = document.querySelector('.platform');
+// Elementos Arte SVG
+const svgPlayer = document.getElementById('svg-player');
+const svgPlatform = document.getElementById('svg-platform');
+const svgRope = document.getElementById('svg-rope');
+const svgLegs = document.getElementById('svg-legs');
+const svgArmHold = document.getElementById('svg-arm-hold');
+
+// Caras
+const svgFaceNeutral = document.getElementById('svg-face-neutral');
+const svgFaceScared = document.getElementById('svg-face-scared');
+const svgFaceDead = document.getElementById('svg-face-dead');
+
+// Dedos (1 a 5)
+const svgFingers = [
+  document.getElementById('svg-finger-1'),
+  document.getElementById('svg-finger-2'),
+  document.getElementById('svg-finger-3'),
+  document.getElementById('svg-finger-4'),
+  document.getElementById('svg-finger-5') // Pulgar
+];
+
 
 // 1. Inicialización
 fetch('datos.json')
@@ -205,25 +221,53 @@ function updateLivesUI() {
 }
 
 function renderArt(shake = false) {
-    playerSprite.className = 'player';
-    rope.style.display = 'none';
-    platform.style.display = 'block';
-    playerHand.innerHTML = '';
-    
-    if (savedState.fails > 0) {
-        playerSprite.classList.add('jumping');
-        rope.style.display = 'block';
-        platform.style.display = 'none';
-        
-        const dedos = Math.max(0, 6 - savedState.fails);
-        for(let i=0; i<dedos; i++) {
-            playerHand.innerHTML += '<div class="finger"></div>';
-        }
+    // ESTADO INICIAL A SALVO
+    if (savedState.fails === 0) {
+      svgPlayer.setAttribute('transform', 'translate(150, 110)'); // Posición suelo
+      svgPlatform.style.display = 'block';
+      svgRope.style.display = 'none';
+      svgArmHold.style.display = 'none';
+      svgLegs.style.display = 'block';
+      
+      svgFaceNeutral.style.display = 'block';
+      svgFaceScared.style.display = 'none';
+      svgFaceDead.style.display = 'none';
+      
+      svgFingers.forEach(f => f.style.display = 'block'); // Reset dedos
+    } 
+    // COLGADO (Fallos 1 a 5)
+    else if (savedState.fails > 0 && savedState.fails < 6) {
+      svgPlayer.setAttribute('transform', 'translate(150, 80)'); // Posición saltando
+      svgPlatform.style.display = 'none';
+      svgRope.style.display = 'block';
+      svgArmHold.style.display = 'block';
+      svgLegs.style.display = 'none'; // Al estar colgado las patas no asientan igual
+      
+      svgFaceNeutral.style.display = 'none';
+      svgFaceScared.style.display = 'block';
+      svgFaceDead.style.display = 'none';
 
-        if (savedState.fails >= 6) {
-            playerSprite.className = 'player dead';
-            rope.style.display = 'none';
+      // Calcular dedos a esconder
+      // Fallo 1 = Quedan 5 dedos. Fallo 5 = Queda 1 dedo (el pulgar).
+      const fallosSobreAgarre = savedState.fails - 1; 
+      for(let i=0; i<5; i++) {
+        if (i < fallosSobreAgarre) {
+          svgFingers[i].style.display = 'none'; // Esconde un dedo
+        } else {
+          svgFingers[i].style.display = 'block';
         }
+      }
+    } 
+    // MUERTO A LA LAVA (Fallo 6)
+    else if (savedState.fails >= 6) {
+      svgPlayer.setAttribute('transform', 'translate(150, 200) rotate(180)'); // Cae y gira
+      svgPlatform.style.display = 'none';
+      svgRope.style.display = 'block';
+      svgArmHold.style.display = 'none'; // Se suelta
+      
+      svgFaceNeutral.style.display = 'none';
+      svgFaceScared.style.display = 'none';
+      svgFaceDead.style.display = 'block';
     }
 
     if (shake) {
