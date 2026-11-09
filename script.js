@@ -1,14 +1,15 @@
 let gameData = null;
 let todayKey = "";
 let todayPuzzle = null;
+let isAnimating = false; // Variable global para bloquear input durante animaciones largas
 
-// Estado en LocalStorage exclusivo para hoy
+// Estado en LocalStorage
 let savedState = JSON.parse(localStorage.getItem('colgadoTodayState')) || {
   date: "",
   guessed: [],
   fails: 0,
   hints: { def: false, let: false },
-  status: 'playing' // 'playing', 'won', 'lost'
+  status: 'playing' 
 };
 
 // Elementos DOM
@@ -24,25 +25,17 @@ const btnHintLet = document.getElementById('btn-hint-let');
 const livesDisplay = document.getElementById('lives-display');
 const dailyActionContainer = document.getElementById('daily-action-container');
 
-// Elementos Arte SVG
-const svgPlayer = document.getElementById('svg-player');
-const svgPlatform = document.getElementById('svg-platform');
-const svgRope = document.getElementById('svg-rope');
-const svgLegs = document.getElementById('svg-legs');
-const svgArmHold = document.getElementById('svg-arm-hold');
-
-// Caras
-const svgFaceNeutral = document.getElementById('svg-face-neutral');
-const svgFaceScared = document.getElementById('svg-face-scared');
-const svgFaceDead = document.getElementById('svg-face-dead');
-
-// Dedos (1 a 5)
+// Elementos SVG Pixel Art
+const camera = document.getElementById('camera');
+const playerGroup = document.getElementById('player-group');
+const spriteStand = document.getElementById('sprite-stand');
+const spriteHang = document.getElementById('sprite-hang');
 const svgFingers = [
-  document.getElementById('svg-finger-1'),
-  document.getElementById('svg-finger-2'),
-  document.getElementById('svg-finger-3'),
-  document.getElementById('svg-finger-4'),
-  document.getElementById('svg-finger-5') // Pulgar
+  document.getElementById('f1'),
+  document.getElementById('f2'),
+  document.getElementById('f3'),
+  document.getElementById('f4'),
+  document.getElementById('f5')
 ];
 
 
@@ -63,11 +56,6 @@ fetch('datos.json')
       const dayIndex = Math.max(0, dayDiff);
       todayKey = today.toISOString().split('T')[0];
 
-      // Seleccionar palabra del día de forma rotativa o por índice
-      const retos = gameData.retos;
-      todayPuzzle = retos[dayIndex % retos.length];
-
-      // Resetear estado si cambió el día
       if (savedState.date !== todayKey) {
         savedState = {
           date: todayKey,
@@ -193,22 +181,7 @@ document.getElementById('btn-share').addEventListener('click', () => {
 function startGame() {
   archiveView.classList.remove('show');
   gameView.classList.remove('hidden');
-  renderGame();
-}
-
-function renderGame() {
-  renderArt();
-  renderWord();
-  renderKeyboard();
-  renderHints();
-  updateLivesUI();
-  
-  if (savedState.status !== 'playing') {
-    // Si se recarga y ya estaba acabado, que vaya a la revisión directamente
-    showReview();
-  } else {
-    hintDisplay.style.display = 'none';
-  }
+  renderGameInit();
 }
 
 function saveStateToLocal() {
@@ -220,63 +193,50 @@ function updateLivesUI() {
     livesDisplay.textContent = '❤️'.repeat(lives) + '🖤'.repeat(6 - lives);
 }
 
-function renderArt(shake = false) {
-    // ESTADO INICIAL A SALVO
-    if (savedState.fails === 0) {
-      svgPlayer.setAttribute('transform', 'translate(150, 110)'); // Posición suelo
-      svgPlatform.style.display = 'block';
-      svgRope.style.display = 'none';
-      svgArmHold.style.display = 'none';
-      svgLegs.style.display = 'block';
-      
-      svgFaceNeutral.style.display = 'block';
-      svgFaceScared.style.display = 'none';
-      svgFaceDead.style.display = 'none';
-      
-      svgFingers.forEach(f => f.style.display = 'block'); // Reset dedos
-    } 
-    // COLGADO (Fallos 1 a 5)
-    else if (savedState.fails > 0 && savedState.fails < 6) {
-      svgPlayer.setAttribute('transform', 'translate(150, 80)'); // Posición saltando
-      svgPlatform.style.display = 'none';
-      svgRope.style.display = 'block';
-      svgArmHold.style.display = 'block';
-      svgLegs.style.display = 'none'; // Al estar colgado las patas no asientan igual
-      
-      svgFaceNeutral.style.display = 'none';
-      svgFaceScared.style.display = 'block';
-      svgFaceDead.style.display = 'none';
+// Pinta el estado inicial (o al recargar la página) SIN animaciones largas
+function renderGameInit() {
+  renderWord();
+  renderKeyboard();
+  renderHints();
+  updateLivesUI();
+  
+  // Sincronizar el SVG de manera instantánea
+  if (savedState.fails === 0) {
+      spriteStand.style.display = 'block';
+      spriteHang.style.display = 'none';
+      playerGroup.className = 'player-start';
+      camera.className = '';
+  } else if (savedState.fails >= 1 && savedState.fails < 6) {
+      spriteStand.style.display = 'none';
+      spriteHang.style.display = 'block';
+      playerGroup.className = 'player-on-rope';
+      camera.className = 'zoomed'; // Zoom instantáneo si ya fallaste antes
+  } else if (savedState.fails >= 6) {
+      spriteStand.style.display = 'none';
+      spriteHang.style.display = 'block'; 
+      playerGroup.className = 'player-in-lava';
+      camera.className = '';
+  }
+  
+  updateFingersUI();
 
-      // Calcular dedos a esconder
-      // Fallo 1 = Quedan 5 dedos. Fallo 5 = Queda 1 dedo (el pulgar).
-      const fallosSobreAgarre = savedState.fails - 1; 
-      for(let i=0; i<5; i++) {
-        if (i < fallosSobreAgarre) {
-          svgFingers[i].style.display = 'none'; // Esconde un dedo
-        } else {
-          svgFingers[i].style.display = 'block';
-        }
-      }
-    } 
-    // MUERTO A LA LAVA (Fallo 6)
-    else if (savedState.fails >= 6) {
-      svgPlayer.setAttribute('transform', 'translate(150, 200) rotate(180)'); // Cae y gira
-      svgPlatform.style.display = 'none';
-      svgRope.style.display = 'block';
-      svgArmHold.style.display = 'none'; // Se suelta
-      
-      svgFaceNeutral.style.display = 'none';
-      svgFaceScared.style.display = 'none';
-      svgFaceDead.style.display = 'block';
-    }
+  if (savedState.status !== 'playing') {
+    showReview();
+  } else {
+    hintDisplay.style.display = 'none';
+  }
+}
 
-    if (shake) {
-        const cardBox = document.getElementById('question-card-box');
-        if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
-        cardBox.classList.remove('screen-shake');
-        void cardBox.offsetWidth;
-        cardBox.classList.add('screen-shake');
+function updateFingersUI() {
+  // Calculamos los dedos a esconder basados en el número de fallos
+  const fallosSobreAgarre = Math.max(0, savedState.fails - 1); 
+  for(let i=0; i<5; i++) {
+    if (i < fallosSobreAgarre) {
+      svgFingers[i].style.display = 'none'; 
+    } else {
+      svgFingers[i].style.display = 'block';
     }
+  }
 }
 
 function renderWord() {
@@ -307,7 +267,7 @@ function renderKeyboard() {
         else btn.classList.add('wrong');
       }
 
-      if (savedState.status !== 'playing') {
+      if (savedState.status !== 'playing' || isAnimating) {
         btn.style.pointerEvents = 'none';
       }
 
@@ -321,29 +281,29 @@ function renderKeyboard() {
 function renderHints() {
   const isFinished = savedState.status !== 'playing';
 
-  btnHintDef.style.opacity = (savedState.hints.def || isFinished) ? '0.4' : '1';
-  btnHintLet.style.opacity = (savedState.hints.let || isFinished) ? '0.4' : '1';
+  btnHintDef.style.opacity = (savedState.hints.def || isFinished || isAnimating) ? '0.4' : '1';
+  btnHintLet.style.opacity = (savedState.hints.let || isFinished || isAnimating) ? '0.4' : '1';
   
   if (savedState.hints.def || isFinished) {
     hintDisplay.style.display = 'block';
     hintDisplay.innerText = todayPuzzle.definicion;
   }
 
-  if (isFinished) {
+  if (isFinished || isAnimating) {
     btnHintDef.onclick = null;
     btnHintLet.onclick = null;
     return;
   }
 
   btnHintDef.onclick = () => {
-    if (savedState.hints.def || savedState.status !== 'playing') return;
+    if (savedState.hints.def || savedState.status !== 'playing' || isAnimating) return;
     savedState.hints.def = true;
     saveStateToLocal();
     renderHints();
   };
 
   btnHintLet.onclick = () => {
-    if (savedState.hints.let || savedState.status !== 'playing') return;
+    if (savedState.hints.let || savedState.status !== 'playing' || isAnimating) return;
     const unrevealed = todayPuzzle.palabra.split('').filter(l => !savedState.guessed.includes(l));
     if (unrevealed.length > 0) {
       savedState.hints.let = true;
@@ -355,49 +315,112 @@ function renderHints() {
   };
 }
 
+// LOGICA PRINCIPAL AL TOCAR UNA TECLA (o pista)
 function handleGuess(key, isHint = false) {
-  if (savedState.status !== 'playing' || savedState.guessed.includes(key)) return;
+  if (savedState.status !== 'playing' || savedState.guessed.includes(key) || isAnimating) return;
 
   savedState.guessed.push(key);
   const isCorrect = todayPuzzle.palabra.includes(key);
 
-  if (!isCorrect && !isHint) {
-    savedState.fails++;
-    renderArt(true);
-  } else if(isCorrect) {
+  if (isCorrect) {
+    // ACIERTO
     const cardBox = document.getElementById('question-card-box');
     cardBox.classList.remove('flash-success');
     void cardBox.offsetWidth;
     cardBox.classList.add('flash-success');
-  }
+    
+    saveStateToLocal();
+    renderWord();
+    updateLivesUI();
+    const keyBtn = document.getElementById('key-' + key);
+    if (keyBtn) keyBtn.classList.add('correct');
+    
+    checkWinCondition();
 
-  saveStateToLocal();
-  renderWord();
-  updateLivesUI();
-  
-  const keyBtn = document.getElementById('key-' + key);
-  if (keyBtn) {
-    keyBtn.classList.add(isCorrect ? 'correct' : 'wrong');
+  } else {
+    // FALLO
+    if(!isHint) savedState.fails++;
+    saveStateToLocal();
+    renderWord();
+    updateLivesUI();
+    const keyBtn = document.getElementById('key-' + key);
+    if (keyBtn) keyBtn.classList.add('wrong');
+    
+    triggerFailAnimation();
   }
-
-  checkEndGame();
 }
 
-function checkEndGame() {
-  const isWon = todayPuzzle.palabra.split('').every(l => savedState.guessed.includes(l));
-  const isLost = savedState.fails >= 6;
-
-  if (isWon || isLost) {
-    savedState.status = isWon ? 'won' : 'lost';
-    saveStateToLocal();
+// SECUENCIA CINEMATOGRÁFICA DE FALLOS
+function triggerFailAnimation() {
+  isAnimating = true; // Bloquea todo input
+  renderKeyboard();   // Para refrescar la opacidad de bloqueo si hace falta
+  renderHints();
+  
+  updateFingersUI();  // Oculta el dedo correspondiente de inmediato
+  
+  if (savedState.fails === 1) {
+    // SECUENCIA 1: Camina y salta -> Espera -> Zoom
+    playerGroup.className = 'jumping-to-rope'; // Dura 1.2s
     
-    // Deshabilitar teclado inmediatamente
+    setTimeout(() => {
+      // Justo cuando termina el salto, se cuelga
+      spriteStand.style.display = 'none';
+      spriteHang.style.display = 'block';
+    }, 1200);
+
+    setTimeout(() => {
+      // Espera 1 segundo colgado (total 2200ms) y hace el Zoom dramático
+      camera.classList.add('zoomed');
+    }, 2200);
+
+    setTimeout(() => {
+      // Termina el zoom, volvemos a permitir jugar
+      isAnimating = false;
+      renderKeyboard();
+      renderHints();
+    }, 3200); 
+
+  } else if (savedState.fails === 6) {
+    // SECUENCIA 2: Zoom Out -> Cae a la lava -> Fin
+    camera.classList.remove('zoomed'); // Zoom out (0.8s)
+    
+    setTimeout(() => {
+      playerGroup.className = 'falling-to-lava'; // Cae (1s)
+    }, 1000);
+
+    setTimeout(() => {
+      isAnimating = false;
+      checkLossCondition(); // Llama a terminar la partida
+    }, 2500); 
+
+  } else {
+    // FALLOS 2-5: El dedo ya se ocultó, esperamos medio segundillo y seguimos
+    setTimeout(() => {
+      isAnimating = false;
+      renderKeyboard();
+      renderHints();
+    }, 500);
+  }
+}
+
+function checkWinCondition() {
+  const isWon = todayPuzzle.palabra.split('').every(l => savedState.guessed.includes(l));
+  if (isWon) {
+    savedState.status = 'won';
+    saveStateToLocal();
     document.querySelectorAll('.key').forEach(btn => btn.style.pointerEvents = 'none');
     
-    // Esperar 1.5 segundos para la animación y saltar a revisión
     setTimeout(() => {
-      renderHints(); 
       showReview();
     }, 1500);
   }
+}
+
+function checkLossCondition() {
+  savedState.status = 'lost';
+  saveStateToLocal();
+  document.querySelectorAll('.key').forEach(btn => btn.style.pointerEvents = 'none');
+  
+  // Como venimos de triggerFailAnimation, ya hemos visto caer al muñeco, vamos directo.
+  showReview();
 }

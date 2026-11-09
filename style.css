@@ -8,10 +8,6 @@
   --text-muted: #4b5563; /* Gris oscuro para textos secundarios */
   --track: #374151; /* Gris muy oscuro para teclado y fondos inactivos */
   --border: #000000;
-  --lava: #ea580c;
-  --lava-dark: #c2410c;
-  --skin: #fcd34d; /* Tono piel tipo simpson / amarillo */
-  --rope: #d7ccc8;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -84,11 +80,11 @@ header { display: flex; flex-direction: column; gap: 15px; }
 .review-word { font-size: 3rem; margin-bottom: 10px; font-weight: bold; color: var(--text); }
 .review-item p { color: var(--text); } 
 
-/* ARTE SVG Y LAVA */
+/* ARTE PIXELADO SVG */
 .art-container {
   width: 100%;
-  height: 200px;
-  background: #111827; 
+  height: 220px;
+  background: #000; 
   border: 4px solid var(--track);
   position: relative;
   overflow: hidden;
@@ -97,28 +93,58 @@ header { display: flex; flex-direction: column; gap: 15px; }
   justify-content: center;
 }
 
-#svg-player {
-  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
+/* Animaciones Lava */
+.pixel-bubbles rect { animation: bubbleFloat 1.5s infinite steps(2); }
+.bub1 { animation-delay: 0s; }
+.bub2 { animation-delay: 0.5s; }
+.bub3 { animation-delay: 1s; }
 
-/* Animaciones de la lava */
-.lava-wave {
-  animation: lavaFlow 3s infinite alternate ease-in-out;
-}
-@keyframes lavaFlow {
-  0% { transform: translateY(0) scaleY(1); }
-  100% { transform: translateY(-5px) scaleY(1.1); }
-}
-
-.spark { animation: sparkRise 2s infinite linear; opacity: 0; }
-.spark-1 { animation-delay: 0s; }
-.spark-2 { animation-delay: 0.6s; }
-.spark-3 { animation-delay: 1.2s; }
-@keyframes sparkRise {
+@keyframes bubbleFloat {
   0% { transform: translateY(0); opacity: 1; }
-  100% { transform: translateY(-30px); opacity: 0; }
+  50% { transform: translateY(-4px); opacity: 1; }
+  100% { transform: translateY(-8px); opacity: 0; }
 }
 
+/* CÁMARA (Para el Zoom de la Mano) */
+#camera {
+  transform-origin: 120px 45px; /* Coordenada exacta del agarre de la mano */
+  transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+#camera.zoomed {
+  transform: scale(4.5); /* Súper zoom a los dedos */
+}
+
+/* ESTADOS DEL PERSONAJE Y ANIMACIONES */
+.player-start {
+  transform: translate(20px, 62px); /* Apoyado en la plataforma */
+}
+.player-on-rope {
+  transform: translate(108px, 35px); /* Colgando (108 + 12 del brazo = 120 de la cuerda) */
+}
+.player-in-lava {
+  transform: translate(108px, 150px) rotate(180deg); /* Caído */
+}
+
+.jumping-to-rope {
+  animation: jumpSequence 1.2s forwards linear;
+}
+@keyframes jumpSequence {
+  0% { transform: translate(20px, 62px); }
+  35% { transform: translate(50px, 62px); } /* Camina al borde */
+  70% { transform: translate(80px, 15px); } /* Vértice del salto */
+  100% { transform: translate(108px, 35px); } /* Se agarra */
+}
+
+.falling-to-lava {
+  animation: fallSequence 1s forwards ease-in;
+}
+@keyframes fallSequence {
+  0% { transform: translate(108px, 35px) rotate(0deg); }
+  100% { transform: translate(108px, 150px) rotate(180deg); }
+}
+
+
+/* RESTO DE LA INTERFAZ */
 .word-container { display: flex; gap: 8px; justify-content: center; margin: 15px 0; flex-wrap: wrap; }
 .letter-slot { width: 32px; height: 40px; border-bottom: 4px solid var(--text); font-size: 2.2rem; display: flex; align-items: flex-end; justify-content: center; color: var(--accent); }
 
@@ -131,6 +157,8 @@ header { display: flex; flex-direction: column; gap: 15px; }
 .key:active { transform: translateY(2px); border-bottom: 2px solid #000; box-shadow: 0 0 0 #000;}
 .key.correct { background: var(--success); color: #000; border-color: #000; pointer-events: none; }
 .key.wrong { background: var(--danger); opacity: 0.6; pointer-events: none; }
+
+.feedback { text-align: center; font-size: 1.6rem; font-weight: bold; }
 
 .btn-pixel { width: 100%; background: var(--accent); color: #000; font-family: 'VT323'; font-size: 1.8rem; border: 4px solid #000; box-shadow: 6px 6px 0px #000; padding: 12px; cursor: pointer; transition: transform 0.1s, box-shadow 0.1s; }
 .btn-pixel:active:not(:disabled) { transform: translate(6px, 6px); box-shadow: 0px 0px 0px #000; }
@@ -148,16 +176,6 @@ header { display: flex; flex-direction: column; gap: 15px; }
   z-index: 100; box-shadow: 4px 4px 0px rgba(0,0,0,0.8); pointer-events: none;
 }
 .toast.show { bottom: 30px; }
-
-@keyframes shake {
-  0% { transform: translate(0, 0); }
-  20% { transform: translate(-8px, 4px); }
-  40% { transform: translate(8px, -4px); }
-  60% { transform: translate(-6px, -2px); }
-  80% { transform: translate(6px, 4px); }
-  100% { transform: translate(0, 0); }
-}
-.screen-shake { animation: shake 0.4s ease-in-out; }
 
 @keyframes flashGreen {
   0% { background-color: var(--card); }
