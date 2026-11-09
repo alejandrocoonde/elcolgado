@@ -1,9 +1,9 @@
 let gameData = null;
 let todayKey = "";
-let todayPuzzle = null;
-let isAnimating = false; // Variable global para bloquear input durante animaciones largas
+let todayPuzzle = { palabra: "HARDWARE", definicion: "Componentes físicos y tangibles de un sistema informático." };
+let isAnimating = false;
 
-// Estado en LocalStorage
+// Estado guardado en LocalStorage
 let savedState = JSON.parse(localStorage.getItem('colgadoTodayState')) || {
   date: "",
   guessed: [],
@@ -38,42 +38,62 @@ const svgFingers = [
   document.getElementById('f5')
 ];
 
-
-// 1. Inicialización
+// Carga inicial robusta (funciona tanto si hay backend JSON como si se abre en directo)
 fetch('datos.json')
   .then(res => {
-    if (!res.ok) throw new Error('Error de red');
+    if (!res.ok) throw new Error('No se pudo cargar datos.json');
     return res.json();
   })
   .then(data => {
     gameData = data;
-    if (gameData && gameData.fecha_inicio) {
-      const startDate = new Date(gameData.fecha_inicio + "T00:00:00").getTime();
-      const today = new Date();
-      today.setHours(0,0,0,0);
-      const dayDiff = Math.floor((today.getTime() - startDate) / (1000 * 60 * 60 * 24));
-      
-      const dayIndex = Math.max(0, dayDiff);
-      todayKey = today.toISOString().split('T')[0];
+    const retos = Array.isArray(data) ? data : (data.retos || []);
+    const fechaInicio = data.fecha_inicio || "2026-01-01";
+    
+    const startDate = new Date(fechaInicio + "T00:00:00").getTime();
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const dayDiff = Math.floor((today.getTime() - startDate) / (1000 * 60 * 60 * 24));
+    
+    const dayIndex = Math.max(0, dayDiff);
+    todayKey = today.toISOString().split('T')[0];
 
-      if (savedState.date !== todayKey) {
-        savedState = {
-          date: todayKey,
-          guessed: [],
-          fails: 0,
-          hints: { def: false, let: false },
-          status: 'playing'
-        };
-        saveStateToLocal();
-      }
-
-      renderMenuUI();
-      initCountdown();
+    const rawPuzzle = retos[dayIndex % retos.length];
+    if (rawPuzzle) {
+      todayPuzzle = {
+        palabra: (rawPuzzle.palabra || rawPuzzle.word || "HARDWARE").toUpperCase(),
+        definicion: rawPuzzle.definicion || rawPuzzle.def || "Definición del reto diario."
+      };
     }
+
+    if (savedState.date !== todayKey) {
+      savedState = {
+        date: todayKey,
+        guessed: [],
+        fails: 0,
+        hints: { def: false, let: false },
+        status: 'playing'
+      };
+      saveStateToLocal();
+    }
+
+    renderMenuUI();
+    initCountdown();
   })
-  .catch(error => {
-    console.error("Fallo:", error);
-    alert("Error cargando datos.json");
+  .catch(err => {
+    console.warn("Usando datos por defecto:", err);
+    todayKey = new Date().toISOString().split('T')[0];
+    if (savedState.date !== todayKey) {
+      savedState = {
+        date: todayKey,
+        guessed: [],
+        fails: 0,
+        hints: { def: false, let: false },
+        status: 'playing'
+      };
+      saveStateToLocal();
+    }
+    renderMenuUI();
+    initCountdown();
   });
 
 function initCountdown() {
@@ -193,14 +213,12 @@ function updateLivesUI() {
     livesDisplay.textContent = '❤️'.repeat(lives) + '🖤'.repeat(6 - lives);
 }
 
-// Pinta el estado inicial (o al recargar la página) SIN animaciones largas
 function renderGameInit() {
   renderWord();
   renderKeyboard();
   renderHints();
   updateLivesUI();
   
-  // Sincronizar el SVG de manera instantánea
   if (savedState.fails === 0) {
       spriteStand.style.display = 'block';
       spriteHang.style.display = 'none';
@@ -210,7 +228,7 @@ function renderGameInit() {
       spriteStand.style.display = 'none';
       spriteHang.style.display = 'block';
       playerGroup.className = 'player-on-rope';
-      camera.className = 'zoomed'; // Zoom instantáneo si ya fallaste antes
+      camera.className = 'zoomed';
   } else if (savedState.fails >= 6) {
       spriteStand.style.display = 'none';
       spriteHang.style.display = 'block'; 
@@ -228,7 +246,6 @@ function renderGameInit() {
 }
 
 function updateFingersUI() {
-  // Calculamos los dedos a esconder basados en el número de fallos
   const fallosSobreAgarre = Math.max(0, savedState.fails - 1); 
   for(let i=0; i<5; i++) {
     if (i < fallosSobreAgarre) {
@@ -241,7 +258,8 @@ function updateFingersUI() {
 
 function renderWord() {
   wordContainer.innerHTML = '';
-  todayPuzzle.palabra.split('').forEach(letter => {
+  const palabra = todayPuzzle.palabra || "HARDWARE";
+  palabra.split('').forEach(letter => {
     const div = document.createElement('div');
     div.className = 'letter-slot';
     div.innerText = savedState.guessed.includes(letter) ? letter : '';
@@ -315,7 +333,6 @@ function renderHints() {
   };
 }
 
-// LOGICA PRINCIPAL AL TOCAR UNA TECLA (o pista)
 function handleGuess(key, isHint = false) {
   if (savedState.status !== 'playing' || savedState.guessed.includes(key) || isAnimating) return;
 
@@ -323,7 +340,6 @@ function handleGuess(key, isHint = false) {
   const isCorrect = todayPuzzle.palabra.includes(key);
 
   if (isCorrect) {
-    // ACIERTO
     const cardBox = document.getElementById('question-card-box');
     cardBox.classList.remove('flash-success');
     void cardBox.offsetWidth;
@@ -338,7 +354,6 @@ function handleGuess(key, isHint = false) {
     checkWinCondition();
 
   } else {
-    // FALLO
     if(!isHint) savedState.fails++;
     saveStateToLocal();
     renderWord();
@@ -350,51 +365,44 @@ function handleGuess(key, isHint = false) {
   }
 }
 
-// SECUENCIA CINEMATOGRÁFICA DE FALLOS
 function triggerFailAnimation() {
-  isAnimating = true; // Bloquea todo input
-  renderKeyboard();   // Para refrescar la opacidad de bloqueo si hace falta
+  isAnimating = true;
+  renderKeyboard();
   renderHints();
   
-  updateFingersUI();  // Oculta el dedo correspondiente de inmediato
+  updateFingersUI();
   
   if (savedState.fails === 1) {
-    // SECUENCIA 1: Camina y salta -> Espera -> Zoom
-    playerGroup.className = 'jumping-to-rope'; // Dura 1.2s
+    playerGroup.className = 'jumping-to-rope';
     
     setTimeout(() => {
-      // Justo cuando termina el salto, se cuelga
       spriteStand.style.display = 'none';
       spriteHang.style.display = 'block';
     }, 1200);
 
     setTimeout(() => {
-      // Espera 1 segundo colgado (total 2200ms) y hace el Zoom dramático
       camera.classList.add('zoomed');
     }, 2200);
 
     setTimeout(() => {
-      // Termina el zoom, volvemos a permitir jugar
       isAnimating = false;
       renderKeyboard();
       renderHints();
     }, 3200); 
 
   } else if (savedState.fails === 6) {
-    // SECUENCIA 2: Zoom Out -> Cae a la lava -> Fin
-    camera.classList.remove('zoomed'); // Zoom out (0.8s)
+    camera.classList.remove('zoomed');
     
     setTimeout(() => {
-      playerGroup.className = 'falling-to-lava'; // Cae (1s)
+      playerGroup.className = 'falling-to-lava';
     }, 1000);
 
     setTimeout(() => {
       isAnimating = false;
-      checkLossCondition(); // Llama a terminar la partida
+      checkLossCondition();
     }, 2500); 
 
   } else {
-    // FALLOS 2-5: El dedo ya se ocultó, esperamos medio segundillo y seguimos
     setTimeout(() => {
       isAnimating = false;
       renderKeyboard();
@@ -420,7 +428,5 @@ function checkLossCondition() {
   savedState.status = 'lost';
   saveStateToLocal();
   document.querySelectorAll('.key').forEach(btn => btn.style.pointerEvents = 'none');
-  
-  // Como venimos de triggerFailAnimation, ya hemos visto caer al muñeco, vamos directo.
   showReview();
 }

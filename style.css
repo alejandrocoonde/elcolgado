@@ -1,12 +1,12 @@
 :root {
-  --bg: #fef9c3; /* Amarillo clarito */
-  --card: #fde047; /* Amarillo vibrante para las cajas */
-  --accent: #f97316; /* Naranja fuerte para acentos y botones */
-  --danger: #dc2626; /* Rojo para errores */
-  --success: #16a34a; /* Verde para aciertos */
-  --text: #111827; /* Texto negro principal */
-  --text-muted: #4b5563; /* Gris oscuro para textos secundarios */
-  --track: #374151; /* Gris muy oscuro para teclado y fondos inactivos */
+  --bg: #fef9c3;
+  --card: #fde047;
+  --accent: #f97316;
+  --danger: #dc2626;
+  --success: #16a34a;
+  --text: #111827;
+  --text-muted: #4b5563;
+  --track: #374151;
   --border: #000000;
 }
 
@@ -107,22 +107,22 @@ header { display: flex; flex-direction: column; gap: 15px; }
 
 /* CÁMARA (Para el Zoom de la Mano) */
 #camera {
-  transform-origin: 120px 45px; /* Coordenada exacta del agarre de la mano */
+  transform-origin: 120px 45px;
   transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 #camera.zoomed {
-  transform: scale(4.5); /* Súper zoom a los dedos */
+  transform: scale(4.5);
 }
 
 /* ESTADOS DEL PERSONAJE Y ANIMACIONES */
 .player-start {
-  transform: translate(20px, 62px); /* Apoyado en la plataforma */
+  transform: translate(20px, 62px);
 }
 .player-on-rope {
-  transform: translate(108px, 35px); /* Colgando (108 + 12 del brazo = 120 de la cuerda) */
+  transform: translate(108px, 35px);
 }
 .player-in-lava {
-  transform: translate(108px, 150px) rotate(180deg); /* Caído */
+  transform: translate(108px, 150px) rotate(180deg);
 }
 
 .jumping-to-rope {
@@ -130,9 +130,9 @@ header { display: flex; flex-direction: column; gap: 15px; }
 }
 @keyframes jumpSequence {
   0% { transform: translate(20px, 62px); }
-  35% { transform: translate(50px, 62px); } /* Camina al borde */
-  70% { transform: translate(80px, 15px); } /* Vértice del salto */
-  100% { transform: translate(108px, 35px); } /* Se agarra */
+  35% { transform: translate(50px, 62px); }
+  70% { transform: translate(80px, 15px); }
+  100% { transform: translate(108px, 35px); }
 }
 
 .falling-to-lava {
@@ -143,10 +143,9 @@ header { display: flex; flex-direction: column; gap: 15px; }
   100% { transform: translate(108px, 150px) rotate(180deg); }
 }
 
-
-/* RESTO DE LA INTERFAZ */
+/* PALABRA Y TECLADO */
 .word-container { display: flex; gap: 8px; justify-content: center; margin: 15px 0; flex-wrap: wrap; }
-.letter-slot { width: 32px; height: 40px; border-bottom: 4px solid var(--text); font-size: 2.2rem; display: flex; align-items: flex-end; justify-content: center; color: var(--accent); }
+.letter-slot { width: 32px; height: 40px; border-bottom: 4px solid var(--text); font-size: 2.2rem; display: flex; align-items: flex-end; justify-content: center; color: var(--accent); font-weight: bold; }
 
 .hints-panel { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
 #hint-display { background: var(--bg); padding: 10px; border: 2px dashed var(--accent); font-size: 1.2rem; color: var(--text); display: none; margin-bottom: 10px; text-transform: none; text-align: center; }
