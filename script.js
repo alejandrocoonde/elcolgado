@@ -15,7 +15,6 @@ let savedState = JSON.parse(localStorage.getItem('colgadoTodayState')) || {
 const archiveView = document.getElementById('archive-view');
 const gameView = document.getElementById('game-view');
 const reviewView = document.getElementById('review-view');
-const endGameModal = document.getElementById('end-game-modal');
 
 const wordContainer = document.getElementById('word-container');
 const kbdContainer = document.getElementById('keyboard');
@@ -107,13 +106,6 @@ document.getElementById('btn-back-archive').addEventListener('click', () => {
   renderMenuUI();
 });
 
-// Modal Final de Partida
-document.getElementById('btn-modal-continue').addEventListener('click', () => {
-  endGameModal.style.display = 'none';
-  gameView.classList.add('hidden');
-  showReview();
-});
-
 function renderMenuUI() {
   dailyActionContainer.innerHTML = '';
   
@@ -158,6 +150,7 @@ function showReview() {
   `;
 
   archiveView.classList.remove('show');
+  gameView.classList.add('hidden');
   reviewView.classList.remove('hidden');
   reviewView.classList.add('show');
 }
@@ -195,7 +188,8 @@ function renderGame() {
   updateLivesUI();
   
   if (savedState.status !== 'playing') {
-    endGameUI(savedState.status === 'won');
+    // Si se recarga y ya estaba acabado, que vaya a la revisión directamente
+    showReview();
   } else {
     hintDisplay.style.display = 'none';
   }
@@ -353,28 +347,13 @@ function checkEndGame() {
     savedState.status = isWon ? 'won' : 'lost';
     saveStateToLocal();
     
+    // Deshabilitar teclado inmediatamente
     document.querySelectorAll('.key').forEach(btn => btn.style.pointerEvents = 'none');
     
+    // Esperar 1.5 segundos para la animación y saltar a revisión
     setTimeout(() => {
-      endGameUI(isWon);
       renderHints(); 
-    }, 1000);
+      showReview();
+    }, 1500);
   }
-}
-
-function endGameUI(isWon) {
-    const title = document.getElementById('modal-title');
-    const desc = document.getElementById('modal-desc');
-    
-    endGameModal.style.display = 'flex';
-    
-    if (isWon) {
-        title.textContent = '¡VICTORIA!';
-        title.style.color = 'var(--success)';
-        desc.innerHTML = `Has adivinado la palabra <br><strong>${todayPuzzle.palabra}</strong>`;
-    } else {
-        title.textContent = '¡DERROTA!';
-        title.style.color = 'var(--danger)';
-        desc.innerHTML = `Has caído a la lava. La palabra era <br><strong>${todayPuzzle.palabra}</strong>`;
-    }
 }
