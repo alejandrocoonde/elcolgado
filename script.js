@@ -15,13 +15,13 @@ let savedState = JSON.parse(localStorage.getItem('colgadoTodayState')) || {
 const archiveView = document.getElementById('archive-view');
 const gameView = document.getElementById('game-view');
 const reviewView = document.getElementById('review-view');
+const endGameModal = document.getElementById('end-game-modal');
 
 const wordContainer = document.getElementById('word-container');
 const kbdContainer = document.getElementById('keyboard');
 const hintDisplay = document.getElementById('hint-display');
 const btnHintDef = document.getElementById('btn-hint-def');
 const btnHintLet = document.getElementById('btn-hint-let');
-const actionBtn = document.getElementById('action-btn');
 const livesDisplay = document.getElementById('lives-display');
 const dailyActionContainer = document.getElementById('daily-action-container');
 
@@ -107,6 +107,13 @@ document.getElementById('btn-back-archive').addEventListener('click', () => {
   renderMenuUI();
 });
 
+// Modal Final de Partida
+document.getElementById('btn-modal-continue').addEventListener('click', () => {
+  endGameModal.style.display = 'none';
+  gameView.classList.add('hidden');
+  showReview();
+});
+
 function renderMenuUI() {
   dailyActionContainer.innerHTML = '';
   
@@ -114,7 +121,9 @@ function renderMenuUI() {
     const btn = document.createElement('button');
     btn.className = 'btn-pixel';
     btn.style.background = 'var(--accent)';
-    btn.textContent = '▶ JUGAR RETO DE HOY';
+    btn.style.padding = '20px';
+    btn.style.fontSize = '2rem';
+    btn.textContent = '▶ JUGAR';
     btn.onclick = () => startGame();
     dailyActionContainer.appendChild(btn);
   } else {
@@ -122,7 +131,9 @@ function renderMenuUI() {
     btn.className = 'btn-pixel';
     btn.style.background = savedState.status === 'won' ? 'var(--success)' : 'var(--danger)';
     btn.style.color = '#fff';
-    btn.textContent = savedState.status === 'won' ? 'HOY: ¡SALVADO! (VER REVISIÓN)' : 'HOY: CAÍSTE (VER REVISIÓN)';
+    btn.style.padding = '20px';
+    btn.style.fontSize = '2rem';
+    btn.textContent = 'HOY: JUGADO (REVISIÓN)';
     btn.onclick = () => showReview();
     dailyActionContainer.appendChild(btn);
   }
@@ -134,13 +145,15 @@ function showReview() {
   
   content.innerHTML = `
     <div class="review-item ${isWon ? 'correct' : 'incorrect'}">
-        <p style="font-size:1.2rem; color:var(--text-muted); margin-bottom:5px;">${isWon ? '✨ ¡TE SALVASTE!' : '💀 CAÍSTE A LA LAVA'}</p>
+        <p style="font-size:1.8rem; font-weight:bold; margin-bottom:5px; color: ${isWon ? 'var(--success)' : 'var(--danger)'};">${isWon ? '✨ ¡TE SALVASTE!' : '💀 CAÍSTE A LA LAVA'}</p>
         <p class="review-word">${todayPuzzle.palabra}</p>
-        <p style="font-size:1.3rem; margin-bottom:10px; text-transform:none;"><strong>Definición:</strong> ${todayPuzzle.definicion}</p>
-        <hr style="border: 1px dashed var(--track); margin: 10px 0;">
-        <p style="font-size:1.2rem;">Pista definición usada: <strong>${savedState.hints.def ? ' SÍ' : ' NO'}</strong></p>
-        <p style="font-size:1.2rem;">Pista letra usada: <strong>${savedState.hints.let ? ' SÍ' : ' NO'}</strong></p>
-        <p style="font-size:1.2rem; margin-top:5px;">Fallos cometidos: <strong>${savedState.fails} / 6</strong></p>
+        <p style="font-size:1.4rem; margin-bottom:15px; text-transform:none; color: var(--text);"><strong>Definición:</strong> ${todayPuzzle.definicion}</p>
+        
+        <div style="background: var(--bg); padding: 10px; border: 2px solid #000; border-radius: 4px; color: var(--text);">
+          <p style="font-size:1.3rem;">Pista definición usada: <strong>${savedState.hints.def ? 'SÍ' : 'NO'}</strong></p>
+          <p style="font-size:1.3rem;">Pista letra usada: <strong>${savedState.hints.let ? 'SÍ' : 'NO'}</strong></p>
+          <p style="font-size:1.3rem; margin-top:5px;">Fallos cometidos: <strong>${savedState.fails} / 6</strong></p>
+        </div>
     </div>
   `;
 
@@ -149,7 +162,7 @@ function showReview() {
   reviewView.classList.add('show');
 }
 
-// Compartir resultado sin rachas
+// Compartir resultado
 document.getElementById('btn-share').addEventListener('click', () => {
   const isWon = savedState.status === 'won';
   let text = `EL COLGADO - RETO DE HOY ${isWon ? '🏆' : '💀'}\n\n`;
@@ -184,7 +197,6 @@ function renderGame() {
   if (savedState.status !== 'playing') {
     endGameUI(savedState.status === 'won');
   } else {
-    actionBtn.classList.add('hidden');
     hintDisplay.style.display = 'none';
   }
 }
@@ -279,7 +291,6 @@ function renderHints() {
     hintDisplay.innerText = todayPuzzle.definicion;
   }
 
-  // Si el juego terminó, bloqueamos los eventos de los botones de pistas
   if (isFinished) {
     btnHintDef.onclick = null;
     btnHintLet.onclick = null;
@@ -342,34 +353,28 @@ function checkEndGame() {
     savedState.status = isWon ? 'won' : 'lost';
     saveStateToLocal();
     
-    // Deshabilitar teclado en caliente
     document.querySelectorAll('.key').forEach(btn => btn.style.pointerEvents = 'none');
     
     setTimeout(() => {
       endGameUI(isWon);
-      renderHints(); // Bloquea oficialmente las pistas al terminar
-    }, 500);
+      renderHints(); 
+    }, 1000);
   }
 }
 
 function endGameUI(isWon) {
-    actionBtn.classList.remove('hidden');
-    hintDisplay.style.display = 'block';
+    const title = document.getElementById('modal-title');
+    const desc = document.getElementById('modal-desc');
+    
+    endGameModal.style.display = 'flex';
     
     if (isWon) {
-        hintDisplay.innerHTML = `¡VICTORIA!<br><span style="font-size: 1.4rem; color: #fff;">Palabra: ${todayPuzzle.palabra}</span>`;
-        hintDisplay.className = 'feedback show success';
+        title.textContent = '¡VICTORIA!';
+        title.style.color = 'var(--success)';
+        desc.innerHTML = `Has adivinado la palabra <br><strong>${todayPuzzle.palabra}</strong>`;
     } else {
-        hintDisplay.innerHTML = `¡DERROTA!<br><span style="font-size: 1.4rem; color: #fff;">La palabra era: ${todayPuzzle.palabra}</span>`;
-        hintDisplay.className = 'feedback show error';
+        title.textContent = '¡DERROTA!';
+        title.style.color = 'var(--danger)';
+        desc.innerHTML = `Has caído a la lava. La palabra era <br><strong>${todayPuzzle.palabra}</strong>`;
     }
-    
-    actionBtn.textContent = 'VOLVER AL MENÚ';
-    actionBtn.style.background = 'var(--track)';
-    actionBtn.style.color = '#fff';
-    actionBtn.onclick = () => {
-        gameView.classList.add('hidden');
-        archiveView.classList.add('show');
-        renderMenuUI();
-    };
 }
