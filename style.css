@@ -105,13 +105,13 @@ header { display: flex; flex-direction: column; gap: 15px; }
   100% { transform: translateY(-8px); opacity: 0; }
 }
 
-/* CÁMARA (Para el Zoom de la Mano) */
+/* CÁMARA (Zoom centrado en la mano y los 5 dedos) */
 #camera {
-  transform-origin: 120px 45px;
+  transform-origin: 116px 40px;
   transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 #camera.zoomed {
-  transform: scale(4.5);
+  transform: scale(3.8);
 }
 
 /* ESTADOS DEL PERSONAJE Y ANIMACIONES */

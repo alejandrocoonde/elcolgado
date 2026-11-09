@@ -219,7 +219,6 @@ function renderGameInit() {
   renderHints();
   updateLivesUI();
   
-  // AHORA SÍ: setAttribute es la forma correcta de cambiar clases en un elemento SVG
   if (savedState.fails === 0) {
       spriteStand.style.display = 'block';
       spriteHang.style.display = 'none';
@@ -366,7 +365,6 @@ function handleGuess(key, isHint = false) {
   }
 }
 
-// LOGICA ACTUALIZADA DE ANIMACIONES SVG
 function triggerFailAnimation() {
   isAnimating = true;
   renderKeyboard();
